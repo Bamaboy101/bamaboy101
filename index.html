@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bamaboy101 — AI Automation Portfolio</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; color: #24292e; line-height: 1.6; }
+    .container { max-width: 980px; margin: 0 auto; padding: 40px 20px; }
+    header { border-bottom: 1px solid #eaecef; padding-bottom: 20px; margin-bottom: 30px; }
+    h1 { font-size: 32px; font-weight: 600; margin: 0 0 10px; }
+    .subtitle { color: #57606a; font-size: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 30px; }
+    .card { border: 1px solid #d1d5da; border-radius: 6px; padding: 24px; background: #ffffff; }
+    .card h3 { margin: 0 0 12px; font-size: 18px; font-weight: 600; }
+    .card p { margin: 0 0 16px; font-size: 14px; color: #57606a; }
+    .card .badge { display: inline-block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; padding: 2px 8px; border-radius: 3px; margin-bottom: 12px; }
+    .badge.live { background-color: #28a745; }
+    .card .links { display: flex; gap: 8px; margin-top: 16px; }
+    .card a { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; background: #f6f8fa; border: 1px solid #d1d5da; border-radius: 4px; text-decoration: none; color: #24292e; font-size: 13px; font-weight: 500; }
+    .card a:hover { background: #eaecef; }
+    .badge { color: #fff !important; text-decoration: none !important; }
+    footer { margin-top: 50px; padding-top: 20px; border-top: 1px solid #eaecef; color: #57606a; font-size: 13px; }
+    .tech { font-size: 11px; color: #57606a; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Bamaboy101</h1>
+      <p class="subtitle">Lead AI Systems Architect · Recruiter-ready portfolio of four independent, working AI automation MVPs.</p>
+    </header>
+
+    <div class="grid">
+      <!-- MarketMesh -->
+      <div class="card">
+        <span class="badge live">LIVE DEMO</span>
+        <h3>MarketMesh AI</h3>
+        <p>Unified financial market intelligence dashboard with explainable, rule-based signals (RSI-14 and MA-Cross), live demo market data, and auditable alert history.</p>
+        <div class="tech">Cloudflare Workers · D1 · Binance API (read-only)</div>
+        <div class="links">
+          <a href="https://bamaboy101.github.io/marketmesh-ai/" target="_blank">Open Dashboard</a>
+          <a href="https://github.com/Bamaboy101/marketmesh-ai" target="_blank">View Repo</a>
+        </div>
+      </div>
+
+      <!-- AgentGuard -->
+      <div class="card">
+        <span class="badge live">LIVE DEMO</span>
+        <h3>AgentGuard AI</h3>
+        <p>AI agent monitoring, heartbeat observability, incident detection, and controlled recovery with human approval gates and audit trails.</p>
+        <div class="tech">Cloudflare Workers · D1 · SQLite</div>
+        <div class="links">
+          <a href="https://bamaboy101.github.io/agentguard-ai/" target="_blank">Open Dashboard</a>
+          <a href="https://github.com/Bamaboy101/agentguard-ai" target="_blank">View Repo</a>
+        </div>
+      </div>
+
+      <!-- ActionFlow -->
+      <div class="card">
+        <span class="badge live">LIVE DEMO</span>
+        <h3>ActionFlow AI</h3>
+        <p>Document and message ingestion, information extraction, task generation, deadline identification, and human approval with ICS calendar export.</p>
+        <div class="tech">Cloudflare Workers · D1 · PDF text extraction</div>
+        <div class="links">
+          <a href="https://bamaboy101.github.io/actionflow-ai/" target="_blank">Open Demo</a>
+          <a href="https://github.com/Bamaboy101/actionflow-ai" target="_blank">View Repo</a>
+        </div>
+      </div>
+
+      <!-- BusinessFlow -->
+      <div class="card">
+        <span class="badge live">LIVE DEMO</span>
+        <h3>BusinessFlow AI</h3>
+        <p>Customer inquiry intake, intent classification, policy-grounded draft responses, task routing, and operations dashboard with sandbox approval.</p>
+        <div class="tech">Cloudflare Workers · D1 · Deterministic classification</div>
+        <div class="links">
+          <a href="https://bamaboy101.github.io/businessflow-ai/" target="_blank">Open Dashboard</a>
+          <a href="https://github.com/Bamaboy101/businessflow-ai" target="_blank">View Repo</a>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p><strong>All four applications are live and recruiter-ready.</strong> Open any link above from any browser — no login, no installation, no credentials required.</p>
+      <p>Built with TypeScript, React, Cloudflare Workers, and D1. All source code is open source (MIT License) on GitHub.</p>
+    </footer>
+  </div>
+</body>
+</html>
