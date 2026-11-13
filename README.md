@@ -1,80 +1,63 @@
 # Bamaboy101 — AI Automation Portfolio
 
-Four recruiter-ready, independently deployable AI automation MVPs. Each application is live and accessible from any browser without login or installation.
+Four independent, publicly deployed AI automation applications. Each one runs entirely on free-tier cloud infrastructure: **open a link and use it** — no login, no installation, no local server.
 
-## Live Applications
+| Application | Live app | Source | What it does |
+|---|---|---|---|
+| **MarketMesh AI** | [Open →](https://bamaboy101.github.io/marketmesh-ai/) | [Repo](https://github.com/Bamaboy101/marketmesh-ai) | Multi-asset market watchlist with explainable RSI‑14 / moving-average signals and an auditable signal history |
+| **AgentGuard AI** | [Open →](https://bamaboy101.github.io/agentguard-ai/) | [Repo](https://github.com/Bamaboy101/agentguard-ai) | Agent heartbeat monitoring, burst-failure incident detection, acknowledgement/resolution with an audit trail |
+| **ActionFlow AI** | [Open →](https://bamaboy101.github.io/actionflow-ai/) | [Repo](https://github.com/Bamaboy101/actionflow-ai) | Turns pasted text or an uploaded PDF into reviewed, approved actions and a downloadable ICS calendar |
+| **BusinessFlow AI** | [Open →](https://bamaboy101.github.io/businessflow-ai/) | [Repo](https://github.com/Bamaboy101/businessflow-ai) | Customer inquiry intake, intent classification, policy-grounded draft replies, approval/escalation with sandbox logging |
 
-| Project | Live App | Backend API | GitHub Repo |
-|---------|----------|-------------|-------------|
-| **[MarketMesh AI](https://bamaboy101.github.io/marketmesh-ai/)** | [Open Dashboard →](https://bamaboy101.github.io/marketmesh-ai/) | [API](https://marketmesh-api.marketmesh-api.workers.dev) | [Repo](https://github.com/Bamaboy101/marketmesh-ai) |
-| **[AgentGuard AI](https://bamaboy101.github.io/agentguard-ai/)** | [Open Dashboard →](https://bamaboy101.github.io/agentguard-ai/) | [API](https://agentguard-api.marketmesh-api.workers.dev) | [Repo](https://github.com/Bamaboy101/agentguard-ai) |
-| **[ActionFlow AI](https://bamaboy101.github.io/actionflow-ai/)** | [Open Demo →](https://bamaboy101.github.io/actionflow-ai/) | [API](https://actionflow-api.marketmesh-api.workers.dev) | [Repo](https://github.com/Bamaboy101/actionflow-ai) |
-| **[BusinessFlow AI](https://bamaboy101.github.io/businessflow-ai/)** | [Open Dashboard →](https://bamaboy101.github.io/businessflow-ai/) | [API](https://businessflow-api.marketmesh-api.workers.dev) | [Repo](https://github.com/Bamaboy101/businessflow-ai) |
+## Architecture
 
-## What Each Project Does
+```mermaid
+flowchart LR
+  B[Browser] --> P[GitHub Pages<br/>standalone React frontend]
+  P -->|HTTPS + anonymous session header| W[Cloudflare Worker<br/>Hono API]
+  W --> D[(Cloudflare D1<br/>one database per app)]
+  W --> X[Binance public API<br/>MarketMesh only]
+```
 
-### MarketMesh AI — Unified Market Intelligence Dashboard
+- **Frontend** — a single self-contained `apps/web/index.html` per app (React from CDN, Tailwind). No build step, so what is committed is exactly what is served.
+- **Backend** — Cloudflare Workers running Hono, one Worker per application.
+- **Storage** — Cloudflare D1 (SQLite), one isolated database per application.
+- **CI/CD** — three independent GitHub Actions workflows per repo: `pages.yml` (publish frontend), `ci.yml` (API typecheck + unit tests), `e2e.yml` (headless Chromium against the **live public URL**, uploading screenshots and Playwright reports).
 
-Multi-asset watchlist (crypto, stocks, commodities) with explainable, rule-based signals (RSI-14 threshold and moving-average cross). Signal events include rule version, input hash, UTC timestamp, and evidence. Stale-data fail-safe suppresses signals on stale data. Idempotent alert previews with n8n webhook payload. No live trading, no broker connections.
+Frontend deployment is deliberately decoupled from backend tests, so a failing test can never take the public site down.
 
-**Stack:** TypeScript, React, Cloudflare Workers, D1, Binance public API (read-only demo)
+## Anonymous sessions and data isolation
 
-### AgentGuard AI — Agent Monitoring & Incident Recovery
+Visitors are anonymous — there are no accounts. The Worker issues an opaque session id (UUID) which the browser keeps in `localStorage` and sends as `x-demo-session`. Every record is stamped with that id and every read is filtered by it, so **two different browsers never see each other's records**, while a reload keeps your own history.
 
-Service registry with heartbeat intake and last-seen health tracking. Missed-heartbeat and burst-failure detection with deduplication. Incident lifecycle: open → acknowledge → resolve, with audit trail (actor/time/reason). Demo simulator to start/stop/fail heartbeat emitters. No remote shell, reboot, or production restart — recovery requires explicit approval.
+Public abuse controls on every Worker: per-session rate limiting, a request-body size ceiling, an origin allowlist for CORS, and input validation on all write endpoints.
 
-**Stack:** TypeScript, React, Cloudflare Workers, D1
+## What is real, and what is demonstration
 
-### ActionFlow AI — Document Processing & Task Automation
+| Real | Demonstration |
+|---|---|
+| Live Binance public market candles (MarketMesh) | Deterministic fallback candles when the upstream feed is unavailable — always labelled `demo-fixture` |
+| Deterministic RSI‑14 / MA-cross rules with evidence and input hashes | No LLM inference is claimed or used |
+| Real PDF text extraction from text-based PDFs | No OCR for scanned/image PDFs |
+| Real persistence in D1, real audit trails | BusinessFlow "sends" nothing: approvals are recorded to a sandbox log only |
+| Real incident detection and dedupe | AgentGuard controls only seeded `svc-demo-*` services — never real infrastructure |
 
-Paste-text and PDF document ingestion with deterministic extraction of dates, times, tasks, parties, and requirements. Timezone and ambiguity flags — no guessed timezones. Review/edit/approve/reject each suggested action. Local ICS calendar export or task-checklist download. Idempotent export; no export of unreviewed actions. No automatic sending without consent.
+**No live trading. No brokerage actions. No customer email sending. No CRM mutation. No paid services.**
 
-**Stack:** TypeScript, React, Cloudflare Workers, D1, PDF text extraction
-
-### BusinessFlow AI — Customer Inquiry & Approved Replies
-
-Customer inquiry intake with intent classification (sales/support/billing/escalation). Policy/FAQ lookup with source IDs and revision. Grounded draft replies citing matched policy; unsupported claims flagged. Approve/escalate with operator audit trail. Sandbox CRM activity (deduplicated); simple queue metrics. No live CRM mutation or customer email send by default.
-
-**Stack:** TypeScript, React, Cloudflare Workers, D1
-
-## Architecture (All Four Projects)
-
-- **Frontend:** React + Tailwind CSS, hosted on GitHub Pages
-- **Backend:** Cloudflare Workers (Hono) + D1 databases (one per project)
-- **Authentication:** None — anonymous, isolated demo sessions
-- **Data:** D1 SQLite (persistent, isolated per project)
-- **Live data:** MarketMesh uses public Binance API (read-only, labeled demo/live)
-- **Cost:** $0/month (all free tiers)
-
-## Security & Data Principles
-
-- **No credentials stored** — `.env.example` files contain placeholder values only
-- **No live trading** — MarketMesh is read-only market data
-- **No external communications** — ActionFlow and BusinessFlow require explicit user approval before any export/send
-- **No remote shell or reboot** — AgentGuard recovery requires explicit approval
-- **Demo data labeled** — all data marked `demo: true` or `rights_tag: 'demo'`
-- **Deterministic rules only** — no claimed live AI inference
-
-## Repositories
-
-Each repo contains: source code, README, architecture docs, installation guide, sample configuration, tests, screenshots, license, and release notes.
-
-- **MarketMesh AI:** https://github.com/Bamaboy101/marketmesh-ai
-- **AgentGuard AI:** https://github.com/Bamaboy101/agentguard-ai
-- **ActionFlow AI:** https://github.com/Bamaboy101/actionflow-ai
-- **BusinessFlow AI:** https://github.com/Bamaboy101/businessflow-ai
-
-## How to Run Locally
+## Running locally
 
 ```bash
-# Any project (ports 4001-4004)
-cd <project>/apps/api
-npm install
-npx tsx src/index.ts   # local Express backend
-# Or deploy to Cloudflare Workers:
-# npx wrangler deploy
+git clone https://github.com/Bamaboy101/<app>.git
+cd <app>/apps/api && npm ci && npm test     # API unit tests
+npx wrangler dev                            # API on :8787
+# frontend: open apps/web/index.html via any static server
+cd ../../e2e && npm ci && npx playwright install chromium && npx playwright test
 ```
+
+## Verification
+
+Each repository publishes its own evidence: GitHub Actions run history, Playwright HTML reports, desktop + mobile screenshots, and network/console diagnostics captured against the public deployment. See the README in each repository for its current results and limitations.
 
 ## License
 
-MIT License — see individual repository LICENSE files.
+MIT — see each repository.
